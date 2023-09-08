@@ -1,10 +1,6 @@
 'use client'
 import './globals.css'
 import type { Metadata } from 'next'
-import { SessionProvider } from 'next-auth/react';
-import { Session } from 'next-auth'
-import NavigationBar from './components/NavigationBar';
-
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -12,23 +8,14 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({
-  session, children
+  children
 }: {
-  session: Session | null
   children: React.ReactNode
 }) {
 
   return (
     <html lang="en">
-      <body className="h-screen bg-background ">
-        <div className='mx-auto max-w-7xl h-screen'>
-          <SessionProvider session={session}>
-            <NavigationBar />
-            {children}
-          </SessionProvider>
-        </div>
-      </body>
-
+      {children}
     </html>
   )
 }

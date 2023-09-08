@@ -8,7 +8,7 @@ import {
 } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger, } from './ui/tabs';
 import Image from 'next/image';
-
+import Link from 'next/link'
 
 import {
     Command,
@@ -28,12 +28,14 @@ export default function NavigationBar() {
                 {/* Items */}
                 <Tabs>
                     <TabsList>
-                        <TabsTrigger value="home">Home</TabsTrigger>
-                        <TabsTrigger value="latest_products">
-                            Latest Products
+                        <TabsTrigger value="home">
+                            <Link href="/home">Home</Link>
                         </TabsTrigger>
-                        <TabsTrigger value="notifications" disabled>
-                            Admin
+                        <TabsTrigger value="latest_products">
+                            <Link href="/home/products">Latest Products</Link>
+                        </TabsTrigger>
+                        <TabsTrigger value="admin" disabled>
+                            <Link href="/admin">Admin</Link>
                         </TabsTrigger>
                     </TabsList>
                 </Tabs>
