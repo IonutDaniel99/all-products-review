@@ -16,7 +16,7 @@ export default function HomeLayout({ children }: { children: React.ReactElement 
         <>
             <Suspense fallback={<Loading />}>
                 <NavigationBar />
-                <div className='flex mt-4 md:gap-4 md:justify-evenly relative top-10'>
+                <div className='flex mt-4 md:justify-evenly relative top-10'>
                     <aside className='hidden md:block  w-3/12'>
                         <UserComponent />
                     </aside>

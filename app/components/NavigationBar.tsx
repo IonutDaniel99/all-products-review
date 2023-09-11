@@ -6,15 +6,17 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import {
     LogOut, Moon, Settings, Sun, User,
 } from "lucide-react"
-import { Tabs, TabsList, TabsTrigger, } from './ui/tabs';
 import Image from 'next/image';
 import Link from 'next/link'
 
 import { Input } from './ui/input';
 import { useTheme } from 'next-themes';
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from './ui/navigation-menu';
+import { usePathname } from 'next/navigation';
 
 export default function NavigationBar() {
     const { data: session } = useSession();
+    const pathname = usePathname()
     const { theme, setTheme } = useTheme()
 
 
@@ -26,31 +28,47 @@ export default function NavigationBar() {
     return (
         <div className='rounded-xl flex items-center h-16 justify-between px-4 mb-2 sticky top-2 w-full'>
             <div className='flex gap-4 items-center'>
-                {/* Logo */}
-                <Image src={"https://img.logoipsum.com/297.svg"} alt={'placeholder logo'} width={164} height={20} />
-                {/* Items */}
-                <Tabs>
-                    <TabsList>
-                        <TabsTrigger value="home">
-                            <Link href="/home">Home</Link>
-                        </TabsTrigger>
-                        <TabsTrigger value="latest_products">
-                            <Link href="/products">Latest Products</Link>
-                        </TabsTrigger>
-                        <TabsTrigger value="admin" disabled>
-                            <Link href="/admin">Admin</Link>
-                        </TabsTrigger>
-                    </TabsList>
-                </Tabs>
+                <Image src={"https://img.logoipsum.com/297.svg"} alt={'placeholder logo'}
+                    width="0"
+                    height="0"
+                    sizes="100vw"
+                    className="w-full h-auto"
+                    priority={false}
+                />
+                <NavigationMenu>
+                    <NavigationMenuList>
+                        <NavigationMenuItem>
+                            <Link href="/home" legacyBehavior passHref>
+                                <NavigationMenuLink className={navigationMenuTriggerStyle()} active={pathname === '/home'}>
+                                    Home
+                                </NavigationMenuLink>
+                            </Link>
+                        </NavigationMenuItem>
+                        <NavigationMenuItem>
+                            <Link href="/products" legacyBehavior passHref>
+                                <NavigationMenuLink className={navigationMenuTriggerStyle()} active={pathname === '/products'}>
+                                    Products
+                                </NavigationMenuLink>
+                            </Link>
+                        </NavigationMenuItem>
+                        <NavigationMenuItem>
+                            <Link href="/admin" legacyBehavior passHref>
+                                <NavigationMenuLink className={navigationMenuTriggerStyle()} active={pathname === '/admin'}>
+                                    Admin
+                                </NavigationMenuLink>
+                            </Link>
+                        </NavigationMenuItem>
+                    </NavigationMenuList>
+                </NavigationMenu>
             </div>
             <div className='flex items-center gap-4'>
                 <span className='flex items-center'>
-                    <Input className='gap-2 flex h-8' placeholder='Search products' />
+                    <Input className='gap-2 flex h-8 border-border' placeholder='Search products' type='search' />
                 </span>
 
                 {session ?
                     <>
-                        <p className='hidden lg:block px-2 py-1.5 text-sm font-semibold text-primary'>{session.user?.name}</p>
+                        <p className='hidden lg:block px-2 py-1.5 text-sm font-semibold text-card-foreground'>{session.user?.name}</p>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Avatar>
