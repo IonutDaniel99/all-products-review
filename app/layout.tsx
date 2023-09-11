@@ -1,6 +1,10 @@
 'use client'
+import { ThemeProvider } from 'next-themes'
 import './globals.css'
 import type { Metadata } from 'next'
+import { NextAuthProvider } from './components/NextAuthProvider'
+import { Suspense } from 'react'
+import Loading from './loading'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -14,8 +18,18 @@ export default function RootLayout({
 }) {
 
   return (
-    <html lang="en">
-      {children}
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <NextAuthProvider>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+            <Suspense fallback={<Loading />}>
+              <div className='mx-auto max-w-7xl h-screen bg-background'>
+                {children}
+              </div>
+            </Suspense>
+          </ThemeProvider>
+        </NextAuthProvider>
+      </body>
     </html>
   )
 }

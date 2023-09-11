@@ -4,22 +4,25 @@ import { Avatar, AvatarFallback, AvatarImage, } from "@/components/ui/avatar"
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import {
-    LogOut, Moon, Settings, User, SearchIcon,
+    LogOut, Moon, Settings, Sun, User,
 } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger, } from './ui/tabs';
 import Image from 'next/image';
 import Link from 'next/link'
 
-import {
-    Command,
-    CommandInput,
-} from "@/components/ui/command"
-import { Button } from './ui/button';
-import { MenubarShortcut } from './ui/menubar';
 import { Input } from './ui/input';
+import { useTheme } from 'next-themes';
 
 export default function NavigationBar() {
     const { data: session } = useSession();
+    const { theme, setTheme } = useTheme()
+
+
+    const handleToggleTheme = () => {
+        const switchTheme = theme === "light" ? "dark" : "light"
+        setTheme(switchTheme)
+    }
+
     return (
         <div className='rounded-xl flex items-center h-16 justify-between px-4 mb-2 sticky top-2 w-full'>
             <div className='flex gap-4 items-center'>
@@ -32,7 +35,7 @@ export default function NavigationBar() {
                             <Link href="/home">Home</Link>
                         </TabsTrigger>
                         <TabsTrigger value="latest_products">
-                            <Link href="/home/products">Latest Products</Link>
+                            <Link href="/products">Latest Products</Link>
                         </TabsTrigger>
                         <TabsTrigger value="admin" disabled>
                             <Link href="/admin">Admin</Link>
@@ -47,7 +50,7 @@ export default function NavigationBar() {
 
                 {session ?
                     <>
-                        <p className='px-2 py-1.5 text-sm font-semibold'>{session.user?.name}</p>
+                        <p className='hidden lg:block px-2 py-1.5 text-sm font-semibold text-primary'>{session.user?.name}</p>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Avatar>
@@ -69,9 +72,13 @@ export default function NavigationBar() {
                                     </DropdownMenuItem>
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                    <Moon className="mr-2 h-4 w-4" />
-                                    <span>Dark Mode</span>
+                                <DropdownMenuItem onClick={() => handleToggleTheme()}>
+                                    {theme === "light" ?
+                                        <Moon className="mr-2 h-4 w-4" />
+                                        :
+                                        <Sun className="mr-2 h-4 w-4" />
+                                    }
+                                    Toggle Theme
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
                                     <LogOut className="mr-2 h-4 w-4" />
