@@ -13,19 +13,19 @@ export default function HomeLayout({ children }: { children: React.ReactElement 
     if (status === "unauthenticated") router.push("/")
 
     return (
-        <>
-            <Suspense fallback={<Loading />}>
+        <Suspense fallback={<Loading />}>
+            <div className='h-full max-w-7xl flex flex-col gap-20'>
                 <NavigationBar />
-                <div className='flex mt-4 md:justify-evenly relative top-10'>
-                    <aside className='hidden md:block  w-3/12'>
+                <div className='flex mt-28 bg-background md:justify-evenly relative'>
+                    <aside className='hidden md:block w-3/12 '>
                         <UserComponent />
                     </aside>
-                    <main className='w-full md:w-8/12 border-2 border-blue-200'>
+                    <main className='w-full md:w-9/12 relative'>
                         {children}
                     </main>
                 </div>
-            </Suspense>
+            </div>
+        </Suspense>
 
-        </>
     )
 }

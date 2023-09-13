@@ -9,7 +9,7 @@ function UserComponent() {
     const { data: session } = useSession();
 
     return (
-        <div className='flex items-center flex-col border-2 rounded-2xl p-6 relative'>
+        <div className='flex items-center flex-col border-2 rounded-2xl p-8 fixed'>
             <span className='py-2 '>
                 <Avatar className='h-40 w-40'>
                     <AvatarImage src={`${session?.user?.image}`} alt="@shadcn" />
