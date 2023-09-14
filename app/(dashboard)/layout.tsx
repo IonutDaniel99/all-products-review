@@ -16,14 +16,9 @@ export default function HomeLayout({ children }: { children: React.ReactElement 
         <Suspense fallback={<Loading />}>
             <div className='h-full max-w-7xl flex flex-col gap-20'>
                 <NavigationBar />
-                <div className='flex mt-28 bg-background md:justify-evenly relative'>
-                    <aside className='hidden md:block w-3/12 '>
-                        <UserComponent />
-                    </aside>
-                    <main className='w-full md:w-9/12 relative'>
-                        {children}
-                    </main>
-                </div>
+                <main className='flex mt-28 relative w-full px-6 lg:px-2'>
+                    {children}
+                </main>
             </div>
         </Suspense>
 

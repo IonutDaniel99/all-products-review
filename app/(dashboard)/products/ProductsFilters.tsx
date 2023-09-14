@@ -40,7 +40,7 @@ function ProductsFilters() {
     }
 
     return (
-        <div className='h-14 border-2 border-border rounded-md flex items-center gap-2 px-[6px] w-full'>
+        <div className='gap-4 xl:border-2 border-border bg-background justify-start rounded-md flex flex-col items-start px-2 py-4 w-full'>
             <div className='flex items-center'>
                 <p className='text-sm ml-2 mr-4 font-semibold'>From</p>
                 <Select onValueChange={(value) => handleDateValueFilter(value)}>
@@ -56,7 +56,7 @@ function ProductsFilters() {
                     </SelectContent>
                 </Select>
             </div>
-            <Separator orientation='vertical' decorative />
+            <Separator orientation='horizontal' decorative />
             <div className='flex items-center'>
                 <p className='text-sm ml-2 mr-4 font-semibold'>Stars</p>
                 <Select onValueChange={(value) => setLowestStar(Number(value))} value={lowestStar.toString()}>
@@ -82,7 +82,7 @@ function ProductsFilters() {
                     </SelectContent>
                 </Select>
             </div>
-            <Separator orientation='vertical' decorative />
+            <Separator orientation='horizontal' decorative />
             <div className='flex items-center'>
                 <p className='text-sm ml-2 mr-4 font-semibold'>Comments</p>
                 <Select onValueChange={(value: "over" | "under") => setCommentsDiff(value)} value={commentsDiff}>
@@ -108,7 +108,7 @@ function ProductsFilters() {
                 </Select>
 
             </div>
-            <Separator orientation='vertical' decorative />
+            <Separator orientation='horizontal' decorative />
             <div className='flex items-center'>
                 <p className='text-sm ml-2 mr-4 font-semibold'>Order</p>
                 <Select onValueChange={(value) => handleDateValueFilter(value)}>
@@ -121,9 +121,10 @@ function ProductsFilters() {
                     </SelectContent>
                 </Select>
             </div>
-            <Separator orientation='vertical' decorative />
-            <div className='flex items-center w-12 justify-center'>
-                <Button variant="outline" size="icon" className='border-none flex flex-col hover:bg-foreground hover:text-background'>
+            <Separator orientation='horizontal' decorative />
+            <div className='flex items-center w-full justify-end pr-2'>
+                <Button variant="outline" size="icon" className='border-none flex w-28 px-4 gap-3 flex-row bg-secondary hover:bg-secondary-foreground hover:text-background'>
+                    <p className='font-bold'>Search</p>
                     <Search size={22} className="h-5 w-5" />
                 </Button>
             </div>
