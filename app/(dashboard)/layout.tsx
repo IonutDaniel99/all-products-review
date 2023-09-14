@@ -19,6 +19,20 @@ export default function HomeLayout({ children }: { children: React.ReactElement 
                 <main className='flex mt-28 relative w-full px-6 lg:px-2'>
                     {children}
                 </main>
+                {/* <footer className='border-2 border-blue-600 h-96 static bottom-0 w-full'>
+                    <div>2</div>
+                    <div>2</div>
+                    <div>2</div>
+                    <div>2</div>
+                    <div>2</div>
+                    <div>2</div>
+                    <div>2</div>
+                    <div>2</div>
+                    <div>2</div>
+                    <div>2</div>
+                    <div>2</div>
+                    <div>2</div>
+                </footer> */}
             </div>
         </Suspense>
 

@@ -1,13 +1,16 @@
-'use client'
-
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ProductsFilters from "./ProductsFilters"
 import ProductItemComponent from "@/components/ProductItemComponent";
 
-function ProductsPage() {
+async function ProductsPage() {
+
+    const imagesList = await Promise.resolve(
+        fetch("https://picsum.photos/v2/list?limit=35")
+    ).then(data => data.json())
+
     return (
         <div className="flex flex-col w-full relative">
-            <div className="flex flex-col xl:flex-row gap-2 xl:gap-10">
+            <div className="flex flex-col xl:flex-row gap-2 xl:gap-10 overflow-y-auto ">
                 <div className="z-40 bg-background hidden xl:block xl:w-3/12 ">
                     <ProductsFilters />
                 </div>
@@ -20,11 +23,10 @@ function ProductsPage() {
                         </DialogHeader>
                     </DialogContent>
                 </Dialog>
-                <div className="w-full xl:w-9/12 border-2 rounded-md overflow-y-auto relative">
-                    {Array.from(Array(10).keys()).map((value, index) => {
-                        console.log(value)
-                        return <ProductItemComponent key={index} val={value} />
-                    })}
+                <div className="w-full xl:w-9/12 border-2 rounded-md relative">
+                    {imagesList.map((value: any, index: number) =>
+                        <ProductItemComponent key={index} product={value} />
+                    )}
                 </div>
             </div>
 
