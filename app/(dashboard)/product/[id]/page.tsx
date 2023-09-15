@@ -1,12 +1,20 @@
-import { ProductType } from '@/types/ProdcutType'
+import { PrismaClient } from '@prisma/client'
 import React from 'react'
 
 async function Product({ params }: { params: { id: number } }) {
-    const productDetails = await Promise.resolve(
-        fetch(`https://picsum.photos/id/${params.id}/info`)
-    ).then(data => data.json())
+    const prisma = new PrismaClient()
+    const product = await prisma.product.findUnique({
+        where: {
+            id: Number(params.id),
+        },
+    })
+
     return (
-        <div>Product {params.id}<br />{productDetails?.author}</div>
+        <div>
+            <p>{product?.title}</p>
+            <p>{product?.description}</p>
+            <p>{product?.numberOfVotes}</p>
+        </div>
     )
 }
 

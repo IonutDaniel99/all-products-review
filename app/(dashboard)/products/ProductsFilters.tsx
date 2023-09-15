@@ -40,7 +40,7 @@ function ProductsFilters() {
     }
 
     return (
-        <div className='gap-4 xl:border-2 border-border bg-background justify-start rounded-md flex flex-col items-start px-2 py-4 w-full'>
+        <div className='gap-4 xl:border-2 border-border bg-background justify-start rounded-md flex flex-col items-start px-2 py-4 w-full font-medium'>
             <div className='flex items-center'>
                 <p className='text-sm ml-2 mr-4 font-semibold'>From</p>
                 <Select onValueChange={(value) => handleDateValueFilter(value)}>
@@ -60,7 +60,7 @@ function ProductsFilters() {
             <div className='flex items-center'>
                 <p className='text-sm ml-2 mr-4 font-semibold'>Stars</p>
                 <Select onValueChange={(value) => setLowestStar(Number(value))} value={lowestStar.toString()}>
-                    <SelectTrigger className="w-16 h-8 flex" icon={<Star size={20} strokeWidth={1.25} />}>
+                    <SelectTrigger className="w-16 h-8 flex" icon={<Star size={20} strokeWidth={1.25} className='pl-1' />}>
                         <SelectValue placeholder={lowestStar} className='h-6' />
                     </SelectTrigger>
                     <SelectContent>
@@ -71,8 +71,8 @@ function ProductsFilters() {
                 </Select>
                 <Ampersand size={16} className='opacity-80 mx-2' />
                 <Select onValueChange={(value) => setHighestStar(Number(value))} value={highestStar.toString()}>
-                    <SelectTrigger className="w-16 h-8 flex" icon={<Star size={20} strokeWidth={1.25} />}>
-                        <SelectValue placeholder={highestStar} className='h-6 ' />
+                    <SelectTrigger className="w-16 h-8 flex" icon={<Star size={20} strokeWidth={1.25} className='pl-1' />}>
+                        <SelectValue placeholder={highestStar} className='h-6' />
                     </SelectTrigger>
                     <SelectContent>
                         {reviews_array.map((value, index) => {

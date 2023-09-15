@@ -25,7 +25,7 @@ export default function NavigationBar({ ...props }) {
     }
 
     return (
-        <div className='flex items-center h-16 justify-between w-full max-w-7xl px-4 fixed top-0 bg-background z-50'>
+        <div className='flex items-center shadow rounded-b-md h-16 justify-between w-full max-w-7xl px-4 fixed top-0 bg-background z-50'>
             <div className='flex gap-4 items-center'>
                 <Image src={"https://img.logoipsum.com/297.svg"} alt={'placeholder logo'}
                     width="0"
