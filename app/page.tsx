@@ -4,8 +4,10 @@ import { useRouter } from 'next/navigation'
 import Loading from './loading'
 import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar'
 
-
 export default function Root() {
+
+
+
     const router = useRouter()
     const { status } = useSession()
     if (status === "loading") return <Loading />

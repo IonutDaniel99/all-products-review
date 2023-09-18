@@ -11,7 +11,6 @@ import { PrismaClient, Product } from "@prisma/client";
 export default async function ProductsPage() {
     const prisma = new PrismaClient()
     const products = await prisma.product.findMany()
-    console.log(products)
 
     return (
         <div className="flex flex-col w-full relative ">
