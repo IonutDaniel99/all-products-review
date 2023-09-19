@@ -3,7 +3,7 @@
 import { Star, StarHalf } from 'lucide-react'
 import Image from 'next/image'
 import React, { Suspense, useMemo, useState } from 'react'
-import { type ProductType } from "@/types/ProdcutType";
+import { type ProductType } from "../../types/ProdcutType";
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { Product } from '@prisma/client';

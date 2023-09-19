@@ -7,15 +7,10 @@ import Loading from './loading'
 import UserComponent from '@/components/UserComponent'
 
 export default function HomeLayout({ children }: { children: React.ReactElement }) {
-    const router = useRouter()
-    const { status } = useSession()
-
-    if (status === "unauthenticated") router.push("/")
 
     return (
         <Suspense fallback={<Loading />}>
             <div className='h-full max-w-7xl flex flex-col gap-20'>
-                <NavigationBar />
                 <main className='flex mt-28 relative w-full px-6 lg:px-2'>
                     {children}
                 </main>
@@ -46,8 +41,6 @@ export default function HomeLayout({ children }: { children: React.ReactElement 
                         <span className="block text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2023 <a href="https://flowbite.com/" className="hover:underline">Flowbite™</a>. All Rights Reserved.</span>
                     </div>
                 </footer>
-
-
             </div>
         </Suspense>
 

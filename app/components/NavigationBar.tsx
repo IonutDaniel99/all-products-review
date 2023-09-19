@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Avatar, AvatarFallback, AvatarImage, } from "@/components/ui/avatar"
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
@@ -12,20 +12,50 @@ import Link from 'next/link'
 import { Input } from './ui/input';
 import { useTheme } from 'next-themes';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from './ui/navigation-menu';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import useAuthModal from '../../hooks/useAuthModal';
+import { useUser } from '../../hooks/useUser';
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
 
 export default function NavigationBar({ ...props }) {
-    const { data: session } = useSession();
+    const authModal = useAuthModal()
     const pathname = usePathname()
+    const router = useRouter()
     const { theme, setTheme } = useTheme()
+    const { user } = useUser()
+    const supabaseClient = useSupabaseClient()
+
+    const routes = useMemo(() => [
+        {
+            label: "Home",
+            active: pathname === '/home',
+            href: '/home'
+        },
+        {
+            label: "Products",
+            active: pathname === '/products',
+            href: '/products'
+        },
+        {
+            label: "Admin",
+            active: pathname === '/admin',
+            href: '/admin'
+        },
+    ], [pathname])
 
     const handleToggleTheme = () => {
         const switchTheme = theme === "light" ? "dark" : "light"
         setTheme(switchTheme)
     }
 
+    const handleLogOut = async () => {
+        const { error } = await supabaseClient.auth.signOut()
+        router.refresh()
+        console.log(error)
+    }
+
     return (
-        <div className='flex items-center shadow rounded-b-md h-16 justify-between w-full max-w-7xl px-4 fixed top-0 bg-background z-50'>
+        <div className='flex items-center shadow rounded-b-md h-20 justify-between w-full max-w-7xl px-4 relative top-0 bg-background'>
             <div className='flex gap-4 items-center'>
                 <Image src={"https://img.logoipsum.com/297.svg"} alt={'placeholder logo'}
                     width="0"
@@ -34,29 +64,17 @@ export default function NavigationBar({ ...props }) {
                     className="w-3/4 md:w-full h-auto"
                     priority={false}
                 />
-                <NavigationMenu>
+                <NavigationMenu className='z-0'>
                     <NavigationMenuList className='hidden md:flex'>
-                        <NavigationMenuItem>
-                            <Link href="/home" legacyBehavior passHref>
-                                <NavigationMenuLink className={navigationMenuTriggerStyle()} active={pathname === '/home'}>
-                                    Home
-                                </NavigationMenuLink>
-                            </Link>
-                        </NavigationMenuItem>
-                        <NavigationMenuItem>
-                            <Link href="/products" legacyBehavior passHref>
-                                <NavigationMenuLink className={navigationMenuTriggerStyle()} active={pathname === '/products'}>
-                                    Products
-                                </NavigationMenuLink>
-                            </Link>
-                        </NavigationMenuItem>
-                        <NavigationMenuItem>
-                            <Link href="/admin" legacyBehavior passHref>
-                                <NavigationMenuLink className={navigationMenuTriggerStyle()} active={pathname === '/admin'}>
-                                    Admin
-                                </NavigationMenuLink>
-                            </Link>
-                        </NavigationMenuItem>
+                        {routes.map((item, index) =>
+                            <NavigationMenuItem key={index}>
+                                <Link href={item.href} legacyBehavior passHref>
+                                    <NavigationMenuLink className={navigationMenuTriggerStyle()} active={item.active}>
+                                        {item.label}
+                                    </NavigationMenuLink>
+                                </Link>
+                            </NavigationMenuItem>
+                        )}
                     </NavigationMenuList>
                 </NavigationMenu>
             </div>
@@ -64,52 +82,55 @@ export default function NavigationBar({ ...props }) {
                 <span className='flex items-center'>
                     <Input className='gap-2 flex h-8 border-border' placeholder='Search products' type='search' />
                 </span>
+                {!user ?
+                    <p onClick={authModal.onOpen} className="px-2 py-1.5 text-sm font-semibold text-card-foreground hover:cursor-pointer">Login</p>
+                    :
+                    <DropdownMenu>
+                        <DropdownMenuTrigger className='flex items-center space gap-x-4'>
+                            <p className='hidden lg:block px-2 py-1.5 text-sm font-semibold text-card-foreground'>{user?.user_metadata.name}</p>
+                            <Avatar>
+                                <AvatarImage src={user?.user_metadata.avatar_url} alt="@shadcn" />
+                                <AvatarFallback>BB</AvatarFallback>
+                            </Avatar>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className='w-56' side='bottom' align='end'>
+                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                            <DropdownMenuGroup>
+                                <div className='flex flex-col md:hidden'>
+                                    <DropdownMenuSeparator />
+                                    <CustomLinkItem pathname={pathname} title='Home' url='/home' icon={<User className="mr-2 h-4 w-4" />} />
+                                    <CustomLinkItem pathname={pathname} title='Products' url='/products' icon={<PackageSearch className="mr-2 h-4 w-4" />} />
+                                    <CustomLinkItem pathname={pathname} title='Admin' url='/admin' icon={<Lock className="mr-2 h-4 w-4" />} disabled />
+                                </div>
+                            </DropdownMenuGroup>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuGroup>
+                                <DropdownMenuItem>
+                                    <User className="mr-2 h-4 w-4" />
+                                    <span>Profile</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <Settings className="mr-2 h-4 w-4" />
+                                    <span>Settings</span>
+                                </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => handleToggleTheme()}>
+                                {theme === "light" ?
+                                    <Moon className="mr-2 h-4 w-4" />
+                                    :
+                                    <Sun className="mr-2 h-4 w-4" />
+                                }
+                                Toggle Theme
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <LogOut className="mr-2 h-4 w-4" />
+                                <span onClick={() => handleLogOut()}>Log out</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                }
 
-                <p className='hidden lg:block px-2 py-1.5 text-sm font-semibold text-card-foreground'>{session?.user?.name}</p>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Avatar>
-                            <AvatarImage src={`${session?.user?.image}`} alt="@shadcn" />
-                            <Menu className='text-card-foreground ' />
-                            <AvatarFallback>{session?.user?.name}</AvatarFallback>
-                        </Avatar>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className='w-56' side='bottom' align='end'>
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                        <DropdownMenuGroup>
-                            <div className='flex flex-col md:hidden'>
-                                <DropdownMenuSeparator />
-                                <CustomLinkItem pathname={pathname} title='Home' url='/home' icon={<User className="mr-2 h-4 w-4" />} />
-                                <CustomLinkItem pathname={pathname} title='Products' url='/products' icon={<PackageSearch className="mr-2 h-4 w-4" />} />
-                                <CustomLinkItem pathname={pathname} title='Admin' url='/admin' icon={<Lock className="mr-2 h-4 w-4" />} disabled />
-                            </div>
-                        </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <User className="mr-2 h-4 w-4" />
-                                <span>Profile</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Settings className="mr-2 h-4 w-4" />
-                                <span>Settings</span>
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleToggleTheme()}>
-                            {theme === "light" ?
-                                <Moon className="mr-2 h-4 w-4" />
-                                :
-                                <Sun className="mr-2 h-4 w-4" />
-                            }
-                            Toggle Theme
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <LogOut className="mr-2 h-4 w-4" />
-                            <span onClick={() => signOut()}>Log out</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
             </div>
         </div>
     )

@@ -4,14 +4,22 @@ import ProductItemComponent from "@/components/ProductItemComponent";
 import { Separator } from "@/components/ui/separator";
 import { Suspense } from "react";
 import ProductsItemLoading from "@/components/loading/ProductsItemLoading";
-import type { InferGetServerSidePropsType, GetServerSideProps } from 'next'
-import { PrismaClient, Product } from "@prisma/client";
-
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
 
 export default async function ProductsPage() {
-    const prisma = new PrismaClient()
-    const products = await prisma.product.findMany()
+
+    const supabase = createServerComponentClient({
+        cookies: cookies
+    });
+
+    let { data: products, error } = await supabase
+        .from("products")
+        .select()
+
     console.log(products)
+
 
     return (
         <div className="flex flex-col w-full relative ">
