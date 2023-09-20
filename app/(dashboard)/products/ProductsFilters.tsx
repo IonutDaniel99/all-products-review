@@ -1,11 +1,10 @@
 'use client'
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from '@/components/ui/navigation-menu'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/_components/ui/select'
 import { Icon, Label, SelectIcon } from '@radix-ui/react-select'
 import { Ampersand, ChevronLeft, ChevronRight, Divide, Minus, Search, Slash, Star } from 'lucide-react'
 import React, { useEffect, useMemo, useState } from 'react'
-import { Separator } from "@/components/ui/separator"
-import { Button } from '@/components/ui/button'
+import { Separator } from "@/_components/ui/separator"
+import { Button } from '@/_components/ui/button'
 
 const reviews_array = Array.from({ length: 10 }, (_, i) => i + 1)
 const comments_array = [10, 25, 50, 100, 250, 500, 1000]

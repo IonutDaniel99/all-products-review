@@ -2,7 +2,6 @@
 import { ThemeProvider } from 'next-themes'
 import './globals.css'
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
 import Loading from './loading'
 import SupabaseProvider from './_providers/SupabaseProvider'
 import UserProvider from './_providers/UserProvider'
@@ -26,13 +25,11 @@ export default function RootLayout({
         <SupabaseProvider>
           <UserProvider>
             <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-              <Suspense fallback={<Loading />}>
-                <div className='mx-auto max-w-7xl h-screen bg-background'>
-                  <ModalProvider />
-                  <NavigationBar />
-                  {children}
-                </div>
-              </Suspense>
+              <div className='mx-auto max-w-7xl h-screen bg-background'>
+                <ModalProvider />
+                <NavigationBar />
+                {children}
+              </div>
             </ThemeProvider>
           </UserProvider>
         </SupabaseProvider>
