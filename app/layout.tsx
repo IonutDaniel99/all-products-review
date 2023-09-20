@@ -24,7 +24,7 @@ export default function RootLayout({
       <body>
         <SupabaseProvider>
           <UserProvider>
-            <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+            <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
               <div className='mx-auto max-w-7xl h-screen bg-background'>
                 <ModalProvider />
                 <NavigationBar />

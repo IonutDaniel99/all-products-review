@@ -9,16 +9,14 @@ import { useTheme } from 'next-themes';
 import { Product } from '@prisma/client';
 
 async function ProductItemComponent({ product }: any) {
-    const { id, image, title, description } = product
+    const { product_id, image_url, title, description, number_of_votes, average_grade } = product
     const { theme } = useTheme()
-    const randomNumber = Number((Math.random() * 10).toFixed(1))
-    const randomStars = randomNumber < 1 ? 1 : randomNumber
 
 
     const generateStars = useMemo(() => {
         const stars: Array<any> = []
-        for (var index = 0; index < randomStars; index++) {
-            if (index < Math.floor(randomStars)) {
+        for (var index = 0; index < average_grade; index++) {
+            if (index < Math.floor(average_grade)) {
                 stars.push(<Star key={index} strokeWidth={0} size={16} className='fill-primary' />)
             }
         }
@@ -26,10 +24,10 @@ async function ProductItemComponent({ product }: any) {
             stars.push(<Star key={index} strokeWidth={0} size={16} fill='#ccc' />)
         }
         return stars
-    }, [randomStars, theme])
+    }, [average_grade, product])
 
 
-    return <Link href={`/product/${id}`}>
+    return <Link href={`/product/${product_id}`}>
         <div className='flex p-4 h-48 gap-6 items-center m-2 hover:bg-secondary rounded-md ease-in-out transition-all duration-500 group font-normal'>
             <Image
                 src={"https://picsum.photos/id/19/2500/1667"}
@@ -45,7 +43,7 @@ async function ProductItemComponent({ product }: any) {
                     <div className='flex items-center'>
                         {generateStars}
                     </div>
-                    <p className='flex gap-2'><b>{randomStars.toFixed(1)}</b>({(Math.random() * (Math.random() * 1000)).toFixed()})</p>
+                    <p className='flex gap-2'><b>{average_grade.toFixed(1)}</b>({number_of_votes})</p>
                 </div>
                 <div className='line-clamp-3'>{description}</div>
             </div>

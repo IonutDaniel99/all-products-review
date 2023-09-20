@@ -84,11 +84,11 @@ export default function NavigationBar({ ...props }) {
                 <span className='flex items-center'>
                     <Input className='gap-2 flex h-8 border-border' placeholder='Search products' type='search' />
                 </span>
-                <div onClick={() => handleToggleTheme()} className='hover:cursor-pointer shadow p-2 rounded-sm border-border hover:bg-secondary'>
+                <div onClick={() => handleToggleTheme()} className='hover:cursor-pointer shadow border-[1px] p-2 rounded-sm border-border hover:bg-secondary'>
                     {hasMounted && theme === "light" ? <Moon className="h-5 w-5" size={26} /> : <Sun className="h-5 w-5" size={26} />}
                 </div>
                 {!user ?
-                    <p onClick={authModal.onOpen} className="px-2 py-1.5 text-sm font-semibold text-card-foreground hover:cursor-pointer">Login</p>
+                    <p onClick={authModal.onOpen} className="px-4 py-2 text-sm font-semibold text-card-foreground hover:cursor-pointer shadow border-[1px] p-2 rounded-sm border-border hover:bg-secondary">Login</p>
                     :
                     <DropdownMenu>
                         <DropdownMenuTrigger className='flex items-center space gap-x-4'>

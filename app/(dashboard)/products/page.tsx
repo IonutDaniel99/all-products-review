@@ -3,6 +3,10 @@ import ProductsFilters from "./ProductsFilters"
 
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
+import { Suspense } from "react";
+import ProductsItemLoading from "@/_components/loading/ProductsItemLoading";
+import { Separator } from "@/_components/ui/separator";
+import ProductItemComponent from "@/_components/ProductItemComponent";
 
 export default async function ProductsPage() {
 
@@ -10,12 +14,11 @@ export default async function ProductsPage() {
         cookies: cookies
     });
 
-    // let { data: products, error } = await supabase
-    //     .from("products")
-    //     .select()
+    let { data: products, error } = await supabase
+        .from("products")
+        .select()
 
-    // console.log(error)
-    // console.log(products)
+    console.log(products)
 
 
     return (
@@ -34,14 +37,14 @@ export default async function ProductsPage() {
                     </DialogContent>
                 </Dialog>
                 <div className="w-full xl:w-9/12 border-2 rounded-md relative ">
-                    {/* {products.map((product, index) => {
+                    {products?.map((product: any, index) => {
                         return <>
                             <Suspense fallback={<ProductsItemLoading />}>
                                 <ProductItemComponent key={index} product={product} />
                                 {index !== products.length - 1 && <Separator orientation='horizontal' decorative className='my-2' />}
                             </Suspense>
                         </>
-                    })} */}
+                    })}
                 </div>
             </div>
 
