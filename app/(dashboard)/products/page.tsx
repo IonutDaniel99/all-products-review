@@ -21,7 +21,7 @@ export default async function ProductsPage() {
     return (
         <div className="flex flex-col w-full relative ">
             <div className="flex flex-col xl:flex-row gap-2 xl:gap-10 overflow-y-auto transition-all duration-500 ease-in-out">
-                <div className="z-40 bg-background hidden xl:block xl:w-3/12 ">
+                <div className=" bg-background hidden xl:block xl:w-3/12 ">
                     <ProductsFilters />
                 </div>
                 <Dialog>

@@ -3,7 +3,7 @@ import React, { useMemo } from 'react'
 import { Avatar, AvatarFallback, AvatarImage, } from "@/_components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import {
-    LogOut, Moon, Settings, Sun, User, Menu, PackageSearch, Lock
+    LogOut, Moon, Settings, Sun, User, PackageSearch, Lock
 } from "lucide-react"
 import Image from 'next/image';
 import Link from 'next/link'
@@ -15,14 +15,16 @@ import { usePathname, useRouter } from 'next/navigation';
 import useAuthModal from '../_hooks/useAuthModal';
 import { useUser } from '../_hooks/useUser';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import useHasMounted from '@/_hooks/useHasMounted';
 
 export default function NavigationBar({ ...props }) {
-    const authModal = useAuthModal()
-    const pathname = usePathname()
-    const router = useRouter()
-    const { theme, setTheme } = useTheme()
     const { user } = useUser()
+    const { theme, setTheme } = useTheme()
+    const router = useRouter()
+    const pathname = usePathname()
+    const hasMounted = useHasMounted()
     const supabaseClient = useSupabaseClient()
+    const authModal = useAuthModal()
 
     const routes = useMemo(() => [
         {
@@ -41,6 +43,7 @@ export default function NavigationBar({ ...props }) {
             href: '/admin'
         },
     ], [pathname])
+
 
     const handleToggleTheme = () => {
         const switchTheme = theme === "light" ? "dark" : "light"
@@ -82,11 +85,7 @@ export default function NavigationBar({ ...props }) {
                     <Input className='gap-2 flex h-8 border-border' placeholder='Search products' type='search' />
                 </span>
                 <div onClick={() => handleToggleTheme()} className='hover:cursor-pointer shadow p-2 rounded-sm border-border hover:bg-secondary'>
-                    {theme === "light" ?
-                        <Moon className="h-5 w-5" size={26} />
-                        :
-                        <Sun className="h-5 w-5" size={26} />
-                    }
+                    {hasMounted && theme === "light" ? <Moon className="h-5 w-5" size={26} /> : <Sun className="h-5 w-5" size={26} />}
                 </div>
                 {!user ?
                     <p onClick={authModal.onOpen} className="px-2 py-1.5 text-sm font-semibold text-card-foreground hover:cursor-pointer">Login</p>
