@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 
 
 import Modal from './Modal';
-import useAuthModal from '../../hooks/useAuthModal';
+import useAuthModal from '../_hooks/useAuthModal';
 import { useTheme } from 'next-themes';
 
 const AuthModal = () => {

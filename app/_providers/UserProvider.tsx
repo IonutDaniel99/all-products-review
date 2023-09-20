@@ -1,6 +1,6 @@
 "use client";
 
-import { MyUserContextProvider } from "../hooks/useUser";
+import { MyUserContextProvider } from "../_hooks/useUser";
 
 
 interface UserProviderProps {

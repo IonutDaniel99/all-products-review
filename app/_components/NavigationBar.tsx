@@ -1,7 +1,6 @@
 'use client'
 import React, { useMemo } from 'react'
-import { Avatar, AvatarFallback, AvatarImage, } from "@/components/ui/avatar"
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { Avatar, AvatarFallback, AvatarImage, } from "@/_components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import {
     LogOut, Moon, Settings, Sun, User, Menu, PackageSearch, Lock
@@ -13,8 +12,8 @@ import { Input } from './ui/input';
 import { useTheme } from 'next-themes';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from './ui/navigation-menu';
 import { usePathname, useRouter } from 'next/navigation';
-import useAuthModal from '../../hooks/useAuthModal';
-import { useUser } from '../../hooks/useUser';
+import useAuthModal from '../_hooks/useAuthModal';
+import { useUser } from '../_hooks/useUser';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 
 export default function NavigationBar({ ...props }) {
@@ -82,6 +81,13 @@ export default function NavigationBar({ ...props }) {
                 <span className='flex items-center'>
                     <Input className='gap-2 flex h-8 border-border' placeholder='Search products' type='search' />
                 </span>
+                <div onClick={() => handleToggleTheme()} className='hover:cursor-pointer shadow p-2 rounded-sm border-border hover:bg-secondary'>
+                    {theme === "light" ?
+                        <Moon className="h-5 w-5" size={26} />
+                        :
+                        <Sun className="h-5 w-5" size={26} />
+                    }
+                </div>
                 {!user ?
                     <p onClick={authModal.onOpen} className="px-2 py-1.5 text-sm font-semibold text-card-foreground hover:cursor-pointer">Login</p>
                     :
@@ -130,6 +136,7 @@ export default function NavigationBar({ ...props }) {
                         </DropdownMenuContent>
                     </DropdownMenu>
                 }
+
 
             </div>
         </div>

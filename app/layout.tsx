@@ -4,10 +4,10 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import Loading from './loading'
-import SupabaseProvider from '../providers/SupabaseProvider'
-import UserProvider from '../providers/UserProvider'
-import NavigationBar from './components/NavigationBar'
-import ModalProvider from '../providers/ModelProvider'
+import SupabaseProvider from './_providers/SupabaseProvider'
+import UserProvider from './_providers/UserProvider'
+import ModalProvider from './_providers/ModelProvider'
+import NavigationBar from './_components/NavigationBar'
 
 export const metadata: Metadata = {
   title: 'Create Next App',

@@ -1,10 +1,6 @@
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/_components/ui/dialog";
 import ProductsFilters from "./ProductsFilters"
-import ProductItemComponent from "@/components/ProductItemComponent";
-import { Separator } from "@/components/ui/separator";
-import { Suspense } from "react";
-import ProductsItemLoading from "@/components/loading/ProductsItemLoading";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
@@ -14,11 +10,12 @@ export default async function ProductsPage() {
         cookies: cookies
     });
 
-    let { data: products, error } = await supabase
-        .from("products")
-        .select()
+    // let { data: products, error } = await supabase
+    //     .from("products")
+    //     .select()
 
-    console.log(products)
+    // console.log(error)
+    // console.log(products)
 
 
     return (
@@ -37,14 +34,14 @@ export default async function ProductsPage() {
                     </DialogContent>
                 </Dialog>
                 <div className="w-full xl:w-9/12 border-2 rounded-md relative ">
-                    {products.map((product, index) => {
+                    {/* {products.map((product, index) => {
                         return <>
                             <Suspense fallback={<ProductsItemLoading />}>
                                 <ProductItemComponent key={index} product={product} />
                                 {index !== products.length - 1 && <Separator orientation='horizontal' decorative className='my-2' />}
                             </Suspense>
                         </>
-                    })}
+                    })} */}
                 </div>
             </div>
 
