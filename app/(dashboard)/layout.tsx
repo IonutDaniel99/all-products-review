@@ -1,9 +1,7 @@
 'use client'
 import NavigationBar from '@/_components/NavigationBar'
-import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import React from 'react'
-import Loading from './loading'
 import UserComponent from '@/_components/UserComponent'
 
 export default function HomeLayout({ children }: { children: React.ReactElement }) {

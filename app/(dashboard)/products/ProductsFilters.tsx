@@ -1,10 +1,11 @@
 'use client'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/_components/ui/select'
 import { Icon, Label, SelectIcon } from '@radix-ui/react-select'
-import { Ampersand, ChevronLeft, ChevronRight, Divide, Minus, Search, Slash, Star } from 'lucide-react'
+import { Ampersand, ChevronLeft, ChevronRight, Divide, Filter, Minus, Search, Slash, Star } from 'lucide-react'
 import React, { useEffect, useMemo, useState } from 'react'
 import { Separator } from "@/_components/ui/separator"
 import { Button } from '@/_components/ui/button'
+import { useProductsFilterStore } from './productState'
 
 const reviews_array = Array.from({ length: 10 }, (_, i) => i + 1)
 const comments_array = [10, 25, 50, 100, 250, 500, 1000]
@@ -16,6 +17,25 @@ function ProductsFilters() {
     const [commentsDiff, setCommentsDiff] = useState<"over" | "under">('over')
     const [commentsNumber, setCommentsNumber] = useState(10)
     const [productsOrder, setProductsOrder] = useState<"asc" | "desc">('asc')
+    const [productPerPage, setProductPerPage] = useState(10)
+
+
+    const setSelectedDateStore = useProductsFilterStore((state) => state.setSelectedDate);
+    const setLowerStarStore = useProductsFilterStore((state) => state.setLowerStar);
+    const setHighestStarStore = useProductsFilterStore((state) => state.setHighestStar);
+    const setCommentsDiffStore = useProductsFilterStore((state) => state.setCommentsDiff);
+    const setCommentsNumberStore = useProductsFilterStore((state) => state.setCommentsNumber);
+    const setProductsOrderStore = useProductsFilterStore((state) => state.setProductOrder);
+    const setProductsPerPageStore = useProductsFilterStore((state) => state.setProductPerPage);
+
+
+
+    useEffect(() => {
+        if (lowestStar > highestStar) {
+            handleHighestStarNumber(lowestStar)
+        }
+    }, [highestStar, lowestStar])
+
 
     const handleDateValueFilter = (value: string) => {
         const values: Record<string, number> = {
@@ -26,17 +46,40 @@ function ProductsFilters() {
             'anytime': 0,
         }
 
-        const selectedDate = values[value]
-        setSelectedDate(selectedDate)
+        const _selectedDate = values[value]
+        setSelectedDate(_selectedDate)
+        setSelectedDateStore(_selectedDate)
     }
 
-    useEffect(() => {
-        if (lowestStar > highestStar) setHighestStar(lowestStar)
-    }, [highestStar, lowestStar])
+    const handleLowestStarNumber = (value: number) => {
+        setLowestStar(value)
+        setLowerStarStore(value)
+    }
 
-    const handleCommentsNumber = (value: string) => {
+    const handleHighestStarNumber = (value: number) => {
+        setHighestStar(value)
+        setHighestStarStore(value)
+    }
+
+    const handleCommentsDiff = (value: "over" | "under") => {
+        setCommentsDiff(value)
+        setCommentsDiffStore(value)
+    }
+
+    const handleCommentNumber = (value: string) => {
         setCommentsNumber(Number(value))
+        setCommentsNumberStore(Number(value))
     }
+
+    const handleProductOrder = (value: "asc" | "desc") => {
+        setProductsOrder(value)
+        setProductsOrderStore(value)
+    }
+    const handleProductsPerPage = (value: string) => {
+        setProductPerPage(Number(value))
+        setProductsPerPageStore(Number(value))
+    }
+
 
     return (
         <div className='gap-4 xl:border-2 border-border bg-background justify-start rounded-md flex flex-col items-start px-2 py-4 w-full font-medium'>
@@ -58,7 +101,7 @@ function ProductsFilters() {
             <Separator orientation='horizontal' decorative />
             <div className='flex items-center'>
                 <p className='text-sm ml-2 mr-4 font-semibold'>Stars</p>
-                <Select onValueChange={(value) => setLowestStar(Number(value))} value={lowestStar.toString()}>
+                <Select onValueChange={(value) => handleLowestStarNumber(Number(value))} value={lowestStar.toString()}>
                     <SelectTrigger className="w-16 h-8 flex" icon={<Star size={20} strokeWidth={1.25} className='pl-1' />}>
                         <SelectValue placeholder={lowestStar} className='h-6' />
                     </SelectTrigger>
@@ -69,7 +112,7 @@ function ProductsFilters() {
                     </SelectContent>
                 </Select>
                 <Ampersand size={16} className='opacity-80 mx-2' />
-                <Select onValueChange={(value) => setHighestStar(Number(value))} value={highestStar.toString()}>
+                <Select onValueChange={(value) => handleHighestStarNumber(Number(value))} value={highestStar.toString()}>
                     <SelectTrigger className="w-16 h-8 flex" icon={<Star size={20} strokeWidth={1.25} className='pl-1' />}>
                         <SelectValue placeholder={highestStar} className='h-6' />
                     </SelectTrigger>
@@ -84,7 +127,7 @@ function ProductsFilters() {
             <Separator orientation='horizontal' decorative />
             <div className='flex items-center'>
                 <p className='text-sm ml-2 mr-4 font-semibold'>Comments</p>
-                <Select onValueChange={(value: "over" | "under") => setCommentsDiff(value)} value={commentsDiff}>
+                <Select onValueChange={(value: "over" | "under") => handleCommentsDiff(value)} value={commentsDiff}>
                     <SelectTrigger className="w-16 h-8 flex">
                         <SelectValue placeholder={commentsDiff} className='h-6' />
                     </SelectTrigger>
@@ -95,7 +138,7 @@ function ProductsFilters() {
                 </Select>
                 {commentsDiff === "over" && <ChevronRight size={20} strokeWidth={1.25} />}
                 {commentsDiff === "under" && <ChevronLeft size={20} strokeWidth={1.25} />}
-                <Select onValueChange={(value) => handleCommentsNumber(value)} value={commentsNumber.toString()}>
+                <Select onValueChange={(value) => handleCommentNumber(value)} value={commentsNumber.toString()}>
                     <SelectTrigger className="w-16 h-8 flex">
                         <SelectValue placeholder={commentsNumber} className='h-6' />
                     </SelectTrigger>
@@ -110,7 +153,7 @@ function ProductsFilters() {
             <Separator orientation='horizontal' decorative />
             <div className='flex items-center'>
                 <p className='text-sm ml-2 mr-4 font-semibold'>Order</p>
-                <Select onValueChange={(value) => handleDateValueFilter(value)}>
+                <Select onValueChange={(value: "asc" | "desc") => handleProductOrder(value)}>
                     <SelectTrigger className="w-32 h-8" icon={null}>
                         <SelectValue placeholder={productsOrder === "asc" ? "Ascending" : "Descending"} className='h-6' />
                     </SelectTrigger>
@@ -121,10 +164,24 @@ function ProductsFilters() {
                 </Select>
             </div>
             <Separator orientation='horizontal' decorative />
+            <div className='flex items-center'>
+                <p className='text-sm ml-2 mr-4 font-semibold'>Items Per Page</p>
+                <Select onValueChange={(value) => handleProductsPerPage(value)}>
+                    <SelectTrigger className="w-32 h-8" icon={null}>
+                        <SelectValue placeholder={productPerPage} className='h-6' />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {[10, 25, 50].map((value, index) => {
+                            return <SelectItem key={index} value={`${value}`}>{value}</SelectItem>
+                        })}
+                    </SelectContent>
+                </Select>
+            </div>
+            <Separator orientation='horizontal' decorative />
             <div className='flex items-center w-full justify-end pr-2'>
-                <Button variant="outline" size="icon" className='border-none flex w-28 px-4 gap-3 flex-row bg-secondary hover:bg-secondary-foreground hover:text-background'>
-                    <p className='font-bold'>Search</p>
-                    <Search size={22} className="h-5 w-5" />
+                <Button variant="outline" size="icon" className='border-border shadow flex w-28 px-4 gap-3 flex-row bg-background hover:bg-secondary'>
+                    <p className='font-semibold'>Filter</p>
+                    <Filter size={22} className="h-5 w-5" />
                 </Button>
             </div>
         </div>

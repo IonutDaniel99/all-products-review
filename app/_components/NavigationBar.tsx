@@ -91,7 +91,7 @@ export default function NavigationBar({ ...props }) {
                     <p onClick={authModal.onOpen} className="px-4 py-2 text-sm font-semibold text-card-foreground hover:cursor-pointer shadow border-[1px] p-2 rounded-sm border-border hover:bg-secondary">Login</p>
                     :
                     <DropdownMenu>
-                        <DropdownMenuTrigger className='flex items-center space gap-x-4'>
+                        <DropdownMenuTrigger className='flex items-center space gap-x-4 outline-none'>
                             <p className='hidden lg:block px-2 py-1.5 text-sm font-semibold text-card-foreground'>{user?.user_metadata.name}</p>
                             <Avatar>
                                 <AvatarImage src={user?.user_metadata.avatar_url} alt="@shadcn" />

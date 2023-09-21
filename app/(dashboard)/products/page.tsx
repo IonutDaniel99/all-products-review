@@ -1,24 +1,12 @@
+
+/* eslint-disable @next/next/no-async-client-component */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/_components/ui/dialog";
 import ProductsFilters from "./ProductsFilters"
+import ProductsPage from "./ProductsPage";
 
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
-import { Suspense } from "react";
-import ProductsItemLoading from "@/_components/loading/ProductsItemLoading";
-import { Separator } from "@/_components/ui/separator";
-import ProductItemComponent from "@/_components/ProductItemComponent";
 
-export default async function ProductsPage() {
-
-    const supabase = createServerComponentClient({
-        cookies: cookies
-    });
-
-    let { data: products, error } = await supabase
-        .from("products")
-        .select()
-
-    console.log(products)
+export default function Page() {
 
 
     return (
@@ -37,14 +25,7 @@ export default async function ProductsPage() {
                     </DialogContent>
                 </Dialog>
                 <div className="w-full xl:w-9/12 border-2 rounded-md relative ">
-                    {products?.map((product: any, index) => {
-                        return <>
-                            <Suspense fallback={<ProductsItemLoading />}>
-                                <ProductItemComponent key={index} product={product} />
-                                {index !== products.length - 1 && <Separator orientation='horizontal' decorative className='my-2' />}
-                            </Suspense>
-                        </>
-                    })}
+                    <ProductsPage />
                 </div>
             </div>
 

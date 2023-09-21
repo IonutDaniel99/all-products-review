@@ -5,13 +5,9 @@ import Image from 'next/image'
 import React, { useMemo, useState } from 'react'
 import { type ProductType } from "../_types/ProdcutType";
 import Link from 'next/link';
-import { useTheme } from 'next-themes';
-import { Product } from '@prisma/client';
 
 async function ProductItemComponent({ product }: any) {
     const { product_id, image_url, title, description, number_of_votes, average_grade } = product
-    const { theme } = useTheme()
-
 
     const generateStars = useMemo(() => {
         const stars: Array<any> = []
