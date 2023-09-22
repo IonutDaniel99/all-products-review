@@ -2,11 +2,11 @@
 import { ThemeProvider } from 'next-themes'
 import './globals.css'
 import type { Metadata } from 'next'
-import Loading from './loading'
 import SupabaseProvider from './_providers/SupabaseProvider'
 import UserProvider from './_providers/UserProvider'
 import ModalProvider from './_providers/ModelProvider'
 import NavigationBar from './_components/NavigationBar'
+import Footer from './_components/Footer'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -29,6 +29,7 @@ export default function RootLayout({
                 <ModalProvider />
                 <NavigationBar />
                 {children}
+                <Footer />
               </div>
             </ThemeProvider>
           </UserProvider>

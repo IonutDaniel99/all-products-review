@@ -34,7 +34,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "pages/_app.jsx",
-    "app/helpers/AuthCheck.js"
+    "app/helpers/AuthCheck.js",
+    "app/_providers/ErrorBoundary.jsx"
   ],
   "exclude": [
     "node_modules"

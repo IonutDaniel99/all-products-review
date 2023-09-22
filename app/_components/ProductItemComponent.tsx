@@ -5,9 +5,10 @@ import Image from 'next/image'
 import React, { useMemo, useState } from 'react'
 import { type ProductType } from "../_types/ProdcutType";
 import Link from 'next/link';
+import moment from 'moment'
 
 async function ProductItemComponent({ product }: any) {
-    const { product_id, image_url, title, description, number_of_votes, average_grade } = product
+    const { product_id, image_url, title, description, number_of_votes, average_grade, date_added } = product
 
     const generateStars = useMemo(() => {
         const stars: Array<any> = []
@@ -23,6 +24,16 @@ async function ProductItemComponent({ product }: any) {
     }, [average_grade, product])
 
 
+    const computeMomentDate = () => {
+        const inputDate = moment(date_added, "YYYYMMDD");
+        const daysDiff = moment().diff(inputDate, 'days');
+        if (daysDiff <= 7) {
+            return inputDate.fromNow();
+        } else {
+            return inputDate.format('DD.MM.YYYY');
+        }
+    }
+
     return <Link href={`/product/${product_id}`}>
         <div className='flex p-4 h-48 gap-6 items-center m-2 hover:bg-secondary rounded-md ease-in-out transition-all duration-500 group font-normal'>
             <Image
@@ -30,11 +41,11 @@ async function ProductItemComponent({ product }: any) {
                 alt={'placeholder logo'}
                 width="256"
                 height="160"
-                className='max-w-[10rem] sm:max-w-[16rem] h-40 sm:group-hover:scale-105 ease-in-out transition-all duration-500 object-fill'
+                className='max-w-[10rem] sm:max-w-[16rem] h-40 sm:group-hover:scale-105 ease-in-out transition-all duration-500 object-fill rounded-md'
                 priority={false}
             />
             <div className='w-8/12 flex flex-col justify-evenly gap-2 ease-in-out transition-all duration-500'>
-                <p className='font-semibold'>{title}</p>
+                <p className='font-semibold'>{title} ---------- {computeMomentDate()}</p>
                 <div className='flex gap-2 items-center '>
                     <div className='flex items-center'>
                         {generateStars}

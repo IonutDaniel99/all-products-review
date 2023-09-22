@@ -1,84 +1,113 @@
 'use client'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/_components/ui/select'
-import { Icon, Label, SelectIcon } from '@radix-ui/react-select'
 import { Ampersand, ChevronLeft, ChevronRight, Divide, Filter, Minus, Search, Slash, Star } from 'lucide-react'
 import React, { useEffect, useMemo, useState } from 'react'
 import { Separator } from "@/_components/ui/separator"
 import { Button } from '@/_components/ui/button'
-import { useProductsFilterStore } from './productState'
+import { type ProductsSearchParams } from '@/_types/ProductsSearchParamsType'
+import { checkObjectErrors, isInArray, toFirstUppercase } from '@/_lib/utils'
+import { useRouter } from 'next/navigation'
 
 const reviews_array = Array.from({ length: 10 }, (_, i) => i + 1)
-const comments_array = [10, 25, 50, 100, 250, 500, 1000]
+const comments_array = [10, 25, 50, 100, 250, 500, 1000];
+const date_values: Record<string, number> = {
+    'last_hour': 1,
+    'last_day': 24,
+    'last_7days': 168,
+    'last_30days': 720,
+    'anytime': 0,
+};
+const date_values_raw: Record<number, string> = {
+    1: 'Last hour',
+    24: 'Last day',
+    168: 'Last 7 days',
+    720: 'Last 30 days',
+    0: 'Anytime',
+};
 
-function ProductsFilters() {
-    const [selectedDate, setSelectedDate] = useState(0)
-    const [lowestStar, setLowestStar] = useState(1)
-    const [highestStar, setHighestStar] = useState(10)
-    const [commentsDiff, setCommentsDiff] = useState<"over" | "under">('over')
-    const [commentsNumber, setCommentsNumber] = useState(10)
-    const [productsOrder, setProductsOrder] = useState<"asc" | "desc">('asc')
-    const [productPerPage, setProductPerPage] = useState(10)
+function ProductsFilters({ searchParams }: ProductsSearchParams) {
+    const router = useRouter();
+
+    const selectedDate = searchParams?.from || 0
+    const starsNumber = searchParams?.stars_number || 10
+    const starsDiff = searchParams?.stars_diff || "under"
+    const commentsNumber = searchParams?.comments_number || 500
+    const commentsDiff = searchParams?.comments_diff || "under"
+    const productsOrder = searchParams?.order_by || "asc"
+    const productPerPage = searchParams?.items_per_page || 10
 
 
-    const setSelectedDateStore = useProductsFilterStore((state) => state.setSelectedDate);
-    const setLowerStarStore = useProductsFilterStore((state) => state.setLowerStar);
-    const setHighestStarStore = useProductsFilterStore((state) => state.setHighestStar);
-    const setCommentsDiffStore = useProductsFilterStore((state) => state.setCommentsDiff);
-    const setCommentsNumberStore = useProductsFilterStore((state) => state.setCommentsNumber);
-    const setProductsOrderStore = useProductsFilterStore((state) => state.setProductOrder);
-    const setProductsPerPageStore = useProductsFilterStore((state) => state.setProductPerPage);
-
-
+    const [handleStarDiffIcon, setHandleStarDiffIcon] = useState("under")
+    const [handleCommsDiffIcon, setHandleCommsDiffIcon] = useState("under")
 
     useEffect(() => {
-        if (lowestStar > highestStar) {
-            handleHighestStarNumber(lowestStar)
-        }
-    }, [highestStar, lowestStar])
+        const querySplit = window.location.href.split('?')[1];
+        const url = new URLSearchParams(querySplit);
+        const date_error = url.has('from') ? isInArray(Number(selectedDate), [0, 1, 24, 168, 720]) : true
+        const stars_error = url.has('stars_number') ? isInArray(Number(starsNumber), reviews_array) : true
+        const stars_diff_error = url.has('stars_diff') ? isInArray(starsDiff, ['under', 'over']) : true
+        const comments_number_error = url.has('comments_number') ? isInArray(Number(commentsNumber), comments_array) : true
+        const comments_diff_error = url.has('comments_diff') ? isInArray(commentsDiff, ['under', 'over']) : true
+        const products_orderBy_error = url.has('order_by') ? isInArray(productsOrder, ['asc', 'desc']) : true
+        const products_perPage_error = url.has('items_per_page') ? isInArray(Number(productPerPage), [10, 25, 50]) : true
+
+        const objectOfAll = { date_error, stars_error, stars_diff_error, comments_number_error, comments_diff_error, products_orderBy_error, products_perPage_error }
+
+        checkObjectErrors(objectOfAll)
+    }, [commentsDiff, commentsNumber, productPerPage, productsOrder, selectedDate, starsDiff, starsNumber])
 
 
     const handleDateValueFilter = (value: string) => {
-        const values: Record<string, number> = {
-            'last_hour': 1,
-            'last_day': 24,
-            'last_7days': 168,
-            'last_30days': 720,
-            'anytime': 0,
-        }
-
-        const _selectedDate = values[value]
-        setSelectedDate(_selectedDate)
-        setSelectedDateStore(_selectedDate)
+        const _selectedDate = date_values[value]
+        handleURLparams("from", _selectedDate)
     }
 
-    const handleLowestStarNumber = (value: number) => {
-        setLowestStar(value)
-        setLowerStarStore(value)
+    const handleStarsDiff = (value: "over" | "under") => {
+        handleURLparams("stars_diff", value)
+        setHandleStarDiffIcon(value)
     }
 
-    const handleHighestStarNumber = (value: number) => {
-        setHighestStar(value)
-        setHighestStarStore(value)
+    const handleStarsNumber = (value: number) => {
+        handleURLparams("stars_number", value)
     }
 
     const handleCommentsDiff = (value: "over" | "under") => {
-        setCommentsDiff(value)
-        setCommentsDiffStore(value)
+        handleURLparams("comments_diff", value)
+        setHandleCommsDiffIcon(value)
+
     }
 
     const handleCommentNumber = (value: string) => {
-        setCommentsNumber(Number(value))
-        setCommentsNumberStore(Number(value))
+        handleURLparams("comments_number", value)
     }
 
     const handleProductOrder = (value: "asc" | "desc") => {
-        setProductsOrder(value)
-        setProductsOrderStore(value)
+        handleURLparams("order_by", value)
     }
     const handleProductsPerPage = (value: string) => {
-        setProductPerPage(Number(value))
-        setProductsPerPageStore(Number(value))
+        handleURLparams("items_per_page", value)
     }
+
+    const handleURLparams = (params: string, newValue: any) => {
+        // Get the current URL search parameters
+        const searchParams = new URLSearchParams(window.location.search);
+
+        // Set the 'order' parameter to the new value
+        searchParams.set(params, newValue);
+
+        // Create a new URL with the updated search parameters
+        const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
+
+        // Use history.pushState to update the URL without a page reload
+        window.history.pushState({ path: newUrl }, '', newUrl);
+
+    };
+
+    const handleRefresh = () => {
+        const href = window.location.href
+        router.replace(href);
+        router.refresh()
+    };
 
 
     return (
@@ -86,8 +115,8 @@ function ProductsFilters() {
             <div className='flex items-center'>
                 <p className='text-sm ml-2 mr-4 font-semibold'>From</p>
                 <Select onValueChange={(value) => handleDateValueFilter(value)}>
-                    <SelectTrigger className="w-32 h-8" icon={null}>
-                        <SelectValue placeholder="Anytime" className='h-6' />
+                    <SelectTrigger className="w-40 h-8" icon={null}>
+                        <SelectValue placeholder={date_values_raw[selectedDate]} className='h-6' />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="last_hour">Last hour</SelectItem>
@@ -101,24 +130,23 @@ function ProductsFilters() {
             <Separator orientation='horizontal' decorative />
             <div className='flex items-center'>
                 <p className='text-sm ml-2 mr-4 font-semibold'>Stars</p>
-                <Select onValueChange={(value) => handleLowestStarNumber(Number(value))} value={lowestStar.toString()}>
-                    <SelectTrigger className="w-16 h-8 flex" icon={<Star size={20} strokeWidth={1.25} className='pl-1' />}>
-                        <SelectValue placeholder={lowestStar} className='h-6' />
+                <Select onValueChange={(value: "over" | "under") => handleStarsDiff(value)}>
+                    <SelectTrigger className="w-20 h-8 flex">
+                        <SelectValue placeholder={toFirstUppercase(starsDiff)} className='h-6' />
                     </SelectTrigger>
                     <SelectContent>
-                        {reviews_array.map((value, index) => {
-                            return <SelectItem key={index} value={`${value}`}>{value}</SelectItem>
-                        })}
+                        <SelectItem value="under">Under</SelectItem>
+                        <SelectItem value="over">Over</SelectItem>
                     </SelectContent>
                 </Select>
-                <Ampersand size={16} className='opacity-80 mx-2' />
-                <Select onValueChange={(value) => handleHighestStarNumber(Number(value))} value={highestStar.toString()}>
+                {handleStarDiffIcon === "over" && <ChevronRight size={20} strokeWidth={1.25} />}
+                {handleStarDiffIcon === "under" && <ChevronLeft size={20} strokeWidth={1.25} />}
+                <Select onValueChange={(value) => handleStarsNumber(Number(value))}>
                     <SelectTrigger className="w-16 h-8 flex" icon={<Star size={20} strokeWidth={1.25} className='pl-1' />}>
-                        <SelectValue placeholder={highestStar} className='h-6' />
+                        <SelectValue placeholder={starsNumber} className='h-6' />
                     </SelectTrigger>
                     <SelectContent>
                         {reviews_array.map((value, index) => {
-                            if (value < lowestStar) return;
                             return <SelectItem key={index} value={`${value}`}>{value}</SelectItem>
                         })}
                     </SelectContent>
@@ -127,18 +155,18 @@ function ProductsFilters() {
             <Separator orientation='horizontal' decorative />
             <div className='flex items-center'>
                 <p className='text-sm ml-2 mr-4 font-semibold'>Comments</p>
-                <Select onValueChange={(value: "over" | "under") => handleCommentsDiff(value)} value={commentsDiff}>
-                    <SelectTrigger className="w-16 h-8 flex">
-                        <SelectValue placeholder={commentsDiff} className='h-6' />
+                <Select onValueChange={(value: "over" | "under") => handleCommentsDiff(value)}>
+                    <SelectTrigger className="w-20 h-8 flex">
+                        <SelectValue placeholder={toFirstUppercase(commentsDiff)} className='h-6' />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="under">Under</SelectItem>
                         <SelectItem value="over">Over</SelectItem>
                     </SelectContent>
                 </Select>
-                {commentsDiff === "over" && <ChevronRight size={20} strokeWidth={1.25} />}
-                {commentsDiff === "under" && <ChevronLeft size={20} strokeWidth={1.25} />}
-                <Select onValueChange={(value) => handleCommentNumber(value)} value={commentsNumber.toString()}>
+                {handleCommsDiffIcon === "over" && <ChevronRight size={20} strokeWidth={1.25} />}
+                {handleCommsDiffIcon === "under" && <ChevronLeft size={20} strokeWidth={1.25} />}
+                <Select onValueChange={(value) => handleCommentNumber(value)}>
                     <SelectTrigger className="w-16 h-8 flex">
                         <SelectValue placeholder={commentsNumber} className='h-6' />
                     </SelectTrigger>
@@ -179,7 +207,7 @@ function ProductsFilters() {
             </div>
             <Separator orientation='horizontal' decorative />
             <div className='flex items-center w-full justify-end pr-2'>
-                <Button variant="outline" size="icon" className='border-border shadow flex w-28 px-4 gap-3 flex-row bg-background hover:bg-secondary'>
+                <Button onClick={() => handleRefresh()} variant="outline" size="icon" className='border-border shadow flex w-28 px-4 gap-3 flex-row bg-background hover:bg-secondary'>
                     <p className='font-semibold'>Filter</p>
                     <Filter size={22} className="h-5 w-5" />
                 </Button>

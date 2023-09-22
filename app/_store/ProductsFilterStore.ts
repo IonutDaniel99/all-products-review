@@ -26,7 +26,7 @@ export const useProductsFilterStore = create<ProductFilterStoreType>()(
         commentsDiff: "over",
         commentsNumber: 10,
         productsOrder: "asc",
-        productPerPage: 2,
+        productPerPage: 10,
         setSelectedDate: (value: number) => set({ selectedDate: value }),
         setLowerStar: (value: number) => set({ lowestStar: value }),
         setHighestStar: (value: number) => set({ highestStar: value }),
@@ -37,10 +37,3 @@ export const useProductsFilterStore = create<ProductFilterStoreType>()(
     }))
 )
 
-export const useSelectedDate = () => useProductsFilterStore((state) => state.selectedDate);
-export const useLowestStar = () => useProductsFilterStore((state) => state.lowestStar);
-export const useHighestStar = () => useProductsFilterStore((state) => state.highestStar);
-export const useCommentsDiff = () => useProductsFilterStore((state) => state.commentsDiff);
-export const useCommentsNumber = () => useProductsFilterStore((state) => state.commentsNumber);
-export const useProductsOrder = () => useProductsFilterStore((state) => state.productsOrder);
-export const useProductPerPage = () => useProductsFilterStore((state) => state.productPerPage);

@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from 'react'
 
 import { createClientComponentClient, createServerComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -5,44 +6,61 @@ import { Suspense, useEffect, useMemo } from "react";
 import ProductsItemLoading from "@/_components/loading/ProductsItemLoading";
 import { Separator } from "@/_components/ui/separator";
 import ProductItemComponent from "@/_components/ProductItemComponent";
-import { useCommentsDiff, useCommentsNumber, useHighestStar, useLowestStar, useProductPerPage, useProductsFilterStore, useProductsOrder, useSelectedDate } from "./productState";
 
-import { cookies } from 'next/headers';
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import { ProductsSearchParams } from '@/_types/ProductsSearchParamsType';
 
 // eslint-disable-next-line @next/next/no-async-client-component
-async function ProductsPage() {
+function ProductsPage({ searchParams }: ProductsSearchParams) {
+    const selectedDate = searchParams?.from || 0
+    const starsNumber = searchParams?.stars_number || 10
+    const starsDiff = searchParams?.stars_diff || "under"
+    const commentsNumber = searchParams?.comments_number || 500
+    const commentsDiff = searchParams?.comments_diff || "under"
+    const productsOrder = searchParams?.order_by || "desc"
+    const productPerPage = searchParams?.items_per_page || 10
 
-    const supabase = createServerComponentClient({
-        cookies: cookies
-    })
+    const supabaseClient = useSupabaseClient()
 
-    const { data: products, error } = await supabase
-        .from('products')
-        .select()
-        .limit(5)
-    // .filter('average_grade', 'gte', lowestStar)
-    // .filter('average_grade', 'lte', highestStar)
-    // .order('date_added', { ascending: productsOrder === 'asc' ? true : false })
-    // .limit(productPerPage)
+    const currentDate = new Date();
+    const xTimesAgo = new Date(currentDate);
 
-    // const filters = {
-    //     selectedDate: useSelectedDate(),
-    //     lowestStar: useLowestStar(),
-    //     highestStar: useHighestStar(),
-    //     commentsDiff: useCommentsDiff(),
-    //     commentsNumber: useCommentsNumber(),
-    //     productsOrder: useProductsOrder(),
-    //     productPerPage: useProductPerPage(),
-    // }
+    const substractDateFromFilter: Record<number, () => number> = {
+        1: () => xTimesAgo.setHours(currentDate.getHours() - 1),
+        24: () => xTimesAgo.setDate(currentDate.getDate() - 1),
+        168: () => xTimesAgo.setDate(currentDate.getDate() - 7),
+        720: () => xTimesAgo.setDate(currentDate.getDate() - 30),
+        0: () => xTimesAgo.setFullYear(currentDate.getHours() - 1), // Note: changed to setHours
+    }
+
+    substractDateFromFilter[selectedDate]();
+
+
+    const [prodData, setProdData] = useState<Array<any>>()
+    const [prodError, setProdError] = useState<string>()
+
+
+    useMemo(async () => {
+        const supabasePromise: any = await supabaseClient
+            .from('products')
+            .select()
+            .filter('date_added', 'gte', xTimesAgo.toISOString())
+            .filter('date_added', 'lt', currentDate.toISOString())
+            .filter('average_grade', starsDiff === "under" ? "lte" : "gte", starsNumber)
+            .order('date_added', { ascending: productsOrder === 'asc' ? true : false })
+            .limit(productPerPage)
+
+        setProdData(supabasePromise.data)
+        setProdError(supabasePromise.error)
+    }, [searchParams])
 
     return (
         <div>
-
-            {products?.map((product: any, index: number) => {
+            {prodData?.map((product: any, index: number) => {
                 return <>
-                    <Suspense fallback={<ProductsItemLoading />}>
+                    <Suspense fallback={<ProductsItemLoading />} key={index}>
                         <ProductItemComponent key={index} product={product} />
-                        {index !== products?.length - 1 && <Separator orientation='horizontal' decorative className='my-2' />}
+                        {index !== prodData?.length - 1 && <Separator orientation='horizontal' decorative className='my-2' />}
                     </Suspense>
                 </>
             })}
