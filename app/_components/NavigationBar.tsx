@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { LogOut, Moon, Settings, Sun, User, PackageSearch, Lock } from "lucide-react";
+import { LogOut, Moon, Settings, Sun, User as UserIcon, PackageSearch, Lock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -20,11 +20,12 @@ import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuL
 import { usePathname, useRouter } from "next/navigation";
 import useAuthModal from "../_hooks/useAuthModal";
 import { useUser } from "../_hooks/useUser";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { User, useSupabaseClient } from "@supabase/auth-helpers-react";
 import useHasMounted from "@/_hooks/useHasMounted";
+import { UserDetailsType } from "@/_types/UserDetails";
 
 export default function NavigationBar({ ...props }) {
-  const { user } = useUser();
+  const { user, userDetails } = useUser();
   const { theme, setTheme } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
@@ -38,21 +39,23 @@ export default function NavigationBar({ ...props }) {
         label: "Home",
         active: pathname === "/home",
         href: "/home",
+        isAdmin: false,
       },
       {
         label: "Products",
         active: pathname === "/products",
         href: "/products",
+        isAdmin: false,
       },
       {
         label: "Admin",
         active: pathname === "/admin",
         href: "/admin",
+        isAdmin: userDetails?.role === "admin"
       },
     ],
-    [pathname]
+    [pathname, user]
   );
-
   const handleToggleTheme = () => {
     const switchTheme = theme === "light" ? "dark" : "light";
     setTheme(switchTheme);
@@ -79,7 +82,7 @@ export default function NavigationBar({ ...props }) {
         <NavigationMenu className="z-0">
           <NavigationMenuList className="hidden md:flex">
             {routes.map((item, index) => (
-              <NavigationMenuItem key={index}>
+              <NavigationMenuItem key={index} hidden={item.isAdmin}>
                 <Link href={item.href} legacyBehavior passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()} active={item.active}>
                     {item.label}
@@ -107,7 +110,7 @@ export default function NavigationBar({ ...props }) {
         ) : (
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center space gap-x-4 outline-none">
-              <p className="hidden lg:block px-2 py-1.5 text-sm font-semibold text-card-foreground">{user?.user_metadata.name}</p>
+              <p className="hidden lg:block px-2 py-1.5 text-sm font-semibold text-card-foreground">{user?.user_metadata.name || userDetails?.raw_user_meta_data.name}</p>
               <Avatar>
                 <AvatarImage src={user?.user_metadata.avatar_url} alt="@shadcn" />
                 <AvatarFallback>BB</AvatarFallback>
@@ -118,7 +121,7 @@ export default function NavigationBar({ ...props }) {
               <DropdownMenuGroup>
                 <div className="flex flex-col md:hidden">
                   <DropdownMenuSeparator />
-                  <CustomLinkItem pathname={pathname} title="Home" url="/home" icon={<User className="mr-2 h-4 w-4" />} />
+                  <CustomLinkItem pathname={pathname} title="Home" url="/home" icon={<UserIcon className="mr-2 h-4 w-4" />} />
                   <CustomLinkItem pathname={pathname} title="Products" url="/products" icon={<PackageSearch className="mr-2 h-4 w-4" />} />
                   <CustomLinkItem pathname={pathname} title="Admin" url="/admin" icon={<Lock className="mr-2 h-4 w-4" />} disabled />
                 </div>
@@ -126,7 +129,7 @@ export default function NavigationBar({ ...props }) {
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
+                  <UserIcon className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
